@@ -1,39 +1,60 @@
 #include "Drivetrain.h"
 #include <Arduino.h>
 #include <stdint.h>
+#include <cstdlib>
+#include <FastPID.h>
+#include <robot/sensor/RobotEncoder.h>
 
-Brushed leftMotor(2,3);
-Brushed rightMotor(4,7);
+#define Kp 1
+#define Ki 0.01
+#define Kd 0.1
+#define updateFreq 100
 
-int8_t throttle = 0;
-int8_t turn = 0;
+FastPID pidLeft(Kp, Ki, Kd, updateFreq, 8, false);
+FastPID pidRight(Kp, Ki, Kd, updateFreq, 8, false);
 
-void updateControls(int8_t throttleAxis, int8_t turningAxis) { //Replace with pointers and change serial to singleton
-    //throttle = (int)(throttleAxis * (double)(100/128));
-    //turn = (int)(turningAxis * (double)(100/258));
-    throttle = throttleAxis;
-    turn = turningAxis;
-    //Serial.println(throttleAxis);
-    //throttle = abs(throttle) > 25 ? throttle : 0;
-    //turn = abs(turn) > 25 ? turn : 0;
-    // Serial.println("");
-    // Serial.print("newData ");
-    // Serial.print(yRAxis);
-    
+Drivetrain* Drivetrain::singleInstance = NULL;
+
+Drivetrain* Drivetrain::Instance() {
+    if(!singleInstance) {
+        singleInstance = new Drivetrain();
+    }
+    return singleInstance;
 }
 
-void updateDrivetrain() {
-    if (abs(throttle) + abs(turn) > 10) {
-        leftMotor.rotate(throttle-turn);
-        rightMotor.rotate(throttle+turn);
-        // Serial.println("");
-        // Serial.print("Left: ");
-        // Serial.print((throttle-turn));
-        // Serial.print(" Right: ");
-        // Serial.print(throttle+turn);
-    }
-    else {
-        leftMotor.rotate(0);
-        rightMotor.rotate(0);
-    }
+Drivetrain::Drivetrain()
+{
+    init();
+}
+
+void Drivetrain::updateControls(int8_t throttleAxis, int8_t turningAxis) { //Replace with pointers and change serial to singleton
+    throttle = throttleAxis;
+    turn = turningAxis;
+}
+
+void Drivetrain::updateDrivetrain() {
+    // if (std::abs(throttle) + std::abs(turn) > 10) {
+    //     leftMotor->rotate(throttle-turn);
+    //     rightMotor->rotate(throttle+turn);
+    // }
+    // else {
+    //     leftMotor->rotate(0);
+    //     rightMotor->rotate(0);
+    // }
+}
+
+void Drivetrain::debug() {
+    //updateEncoder();
+    pids();
+}
+
+void Drivetrain::debugScheduled() {
+    Serial.println("");
+    Serial.print("Output: ");
+    Serial.print(readEncoder(true));
+}
+
+void Drivetrain::pids() {
+    int16_t output = pidLeft.step(2000,(int16_t)(readEncoder(true)*100));
+    rightMotor->rotate(output);
 }

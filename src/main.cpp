@@ -1,10 +1,9 @@
 #include <Arduino.h>
 #include <vector>
-#include <Encoder.h>
 #include <Chrono.h>
 #include <IntervalTimer.h>
 #include <robot/defs.h>
-#include <robot/RobotSerial.h>
+#include <robot/comms/RobotSerial.h>
 #include <robot/sensor/RobotEncoder.h>
 #include <robot/subsystems/Elevator.h>
 #include <TeensyStep.h>
@@ -13,6 +12,7 @@
 #include <robot/util/Queue.h>
 
 #define robotSerial RobotSerial::Instance()
+#define drivetrain Drivetrain::Instance()
 
 //2mm pitch. Every one rotation is 2mm up
 int elevatorHeightsMM[] = {0,116,170};
@@ -94,11 +94,12 @@ void loop() {
 
 //Drivetrain
 void mainDrivetrainLoop() {
-
+  drivetrain->debug();
 }
 void mainScheduledDrivetrainLoop() {
-  updateControls(averageThrottle/loopCount, averageTurn/loopCount);
-  updateDrivetrain();
+  drivetrain->debugScheduled();
+  drivetrain->updateControls(averageThrottle/loopCount, averageTurn/loopCount);
+  drivetrain->updateDrivetrain();
   loopCount = 0;
   averageThrottle = 0;
   averageTurn = 0;
