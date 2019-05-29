@@ -10,9 +10,11 @@
 #include <robot/subsystems/Drivetrain.h>
 #include <robot/util/ButtonPressCounter.h>
 #include <robot/util/Queue.h>
+#include "robot/subsystems/Mechanisms.h"
 
 #define robotSerial RobotSerial::Instance()
 #define drivetrain Drivetrain::Instance()
+#define mechanisms Mechanisms::Instance()
 
 //2mm pitch. Every one rotation is 2mm up
 int elevatorHeightsMM[] = {0,116,170};
@@ -50,6 +52,7 @@ void mainScheduledGameControllerLoop();
 
 void buttonHandler();
 void buttonSetup();
+void updateMechanismStates(int buttonID);
 
 void changeElevatorHeightState(bool increment);
 void changeElevatorRotationState(bool increment);
@@ -82,12 +85,11 @@ void loop() {
   mainElevatorLoop();
   mainMechanismsLoop();
   debugLoop();
-
   if(schedular.hasPassed(updateClockRate)) {
     schedular.restart();
     mainScheduledGameControllerLoop();
-    mainScheduledDrivetrainLoop();
     mainScheduledElevatorLoop();
+    mainScheduledDrivetrainLoop();
     mainScheduledMechanismsLoop();
   }
 }
@@ -130,33 +132,76 @@ void mainScheduledElevatorLoop() {
 }
 
 //Mechanisms
+
+
+// void updateMechanismStates(int buttonID) {
+//   switch (buttonID)
+//   {
+//   case SQR_BUTTON:
+//     mechanisms->setMechanismState(true,!mechanisms->previousBallState);
+//     break;
+  
+//   default:
+//     break;
+//   }
+// }
+
 void mainMechanismsLoop() {
-
+  
 }
-void mainScheduledMechanismsLoop() {
 
+void mainScheduledMechanismsLoop() {
+  mechanisms->update();
+  Serial.println("mech update");
 }
 
 //Game controller
 ButtonPressCounter xButtonCounter;
 ButtonPressCounter triButtonCounter;
-ButtonPressCounter sqrButtonCounter;
-ButtonPressCounter oButtonCounter;
+ButtonPressCounter dpadLeftButtonCounter;
+ButtonPressCounter dpadRightButtonCounter;
+
+ButtonPressCounter deployBallIntake;
+ButtonPressCounter deployHatchMech;
+ButtonPressCounter intakeBall;
+ButtonPressCounter outtakeBall;
+ButtonPressCounter intakeHatch;
+ButtonPressCounter outtakeHatch;
 
 void buttonHandler(int buttonID) {
   Serial.println(buttonID);
   switch (buttonID) {
+  //ELEVATOR
   case X_BUTTON:
     changeElevatorHeightState(false);
     break;
   case TRI_BUTTON:
     changeElevatorHeightState(true);
     break;
-  case SQR_BUTTON:
+  case DPAD_LEFT:
     changeElevatorRotationState(true);
     break;
-  case O_BUTTON:
+  case DPAD_RIGHT:
     changeElevatorRotationState(false);
+    break;
+  //MECHANISMS
+  case SQR_BUTTON:
+    mechanisms->setMechanismState(true,!mechanisms->previousBallState);
+    break;
+  case O_BUTTON:
+    mechanisms->setMechanismState(false,!mechanisms->previousBallState);
+    break;
+  case L2:
+    mechanisms->setIntakeOuttake(true,true,false);
+    break;
+  case L1:
+    mechanisms->setIntakeOuttake(true,false,true);
+    break;
+  case R2:
+    mechanisms->setIntakeOuttake(false,true,false);
+    break;
+  case R1:
+    mechanisms->setIntakeOuttake(false,false,true);
     break;
   default:
     break;
@@ -166,12 +211,20 @@ void buttonHandler(int buttonID) {
 void mainGameControllerLoop() {
   robotSerial->update();
   averageThrottle += robotSerial->yLAxis;
-  averageTurn += robotSerial->xRAxis;
-  //Serial.println("Game controller update");
+  averageTurn += robotSerial->xLAxis;
+  //Elevator
   xButtonCounter.update(&buttonHandler, robotSerial->buttons[X_BUTTON], X_BUTTON);
   triButtonCounter.update(&buttonHandler, robotSerial->buttons[TRI_BUTTON], TRI_BUTTON);
-  sqrButtonCounter.update(&buttonHandler, robotSerial->buttons[SQR_BUTTON], SQR_BUTTON);
-  oButtonCounter.update(&buttonHandler, robotSerial->buttons[O_BUTTON], O_BUTTON);
+  dpadLeftButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_LEFT], DPAD_LEFT);
+  dpadRightButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_RIGHT], DPAD_RIGHT);
+  //Mechanisms
+  deployBallIntake.update(&buttonHandler, robotSerial->buttons[SQR_BUTTON], SQR_BUTTON);
+  deployHatchMech.update(&buttonHandler, robotSerial->buttons[O_BUTTON], O_BUTTON);
+  intakeBall.update(&buttonHandler, robotSerial->buttons[L2], L2);
+  outtakeBall.update(&buttonHandler, robotSerial->buttons[L1], L1);
+  intakeHatch.update(&buttonHandler, robotSerial->buttons[R2], R2);
+  outtakeHatch.update(&buttonHandler, robotSerial->buttons[R1], R1);
+
   loopCount++;
 }
 

@@ -19,7 +19,7 @@ public:
     // bool oButton = false;
     // bool triangleButton = false;
     bool newData = false;
-    bool buttons[4];
+    bool buttons[12];
 
     // Axes (range from -1.0 to 1.0, updated automatically)
     int8_t xLAxis = 0.0;

@@ -1,17 +1,18 @@
-#include "MechanismSuperstructure.cpp"
+// #include "MechanismSuperstructure.h"
 
-class HatchMechSS: public MechanismSuperstructure
-{
-private:
-    /* data */
-public:
-    HatchMechSS(/* args */);
-};
+// class HatchMechSS: public MechanismSuperstructure
+// {
+// private:
+//     /* data */
+// public:
+//     HatchMechSS(/* args */);
+// };
 
-HatchMechSS::HatchMechSS(/* args */)
-{
-}
+// HatchMechSS::HatchMechSS(/* args */)
+// {
+// }
 
-bool willCollide(RobotState robotState, MechanismState desiredState) {
-}
+// bool willCollide(RobotState robotState, MechanismState desiredState) {
+//     return false;
+// }
 

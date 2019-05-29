@@ -33,6 +33,16 @@ void RobotSerial::update() {
         yLAxis = packet[1];
         yRAxis = packet[2];
         xRAxis = packet[3];
+        buttons[L1] = bitRead(packet[5], 0);
+        buttons[L2] = bitRead(packet[5], 1);
+        buttons[R1] = bitRead(packet[5], 2);
+        buttons[R2] = bitRead(packet[5], 3);
+
+        buttons[DPAD_UP] = bitRead(packet[6], 0);
+        buttons[DPAD_RIGHT] = bitRead(packet[6], 1);
+        buttons[DPAD_DOWN] = bitRead(packet[6], 2);
+        buttons[DPAD_LEFT] = bitRead(packet[6], 3);
+        
         newData = true;
         // Serial.println("");
         // Serial.print("Throttle: ");

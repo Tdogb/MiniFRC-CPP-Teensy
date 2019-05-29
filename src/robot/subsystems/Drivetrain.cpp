@@ -33,25 +33,25 @@ void Drivetrain::updateControls(int8_t throttleAxis, int8_t turningAxis) { //Rep
 }
 
 void Drivetrain::updateDrivetrain() {
-    // if (std::abs(throttle) + std::abs(turn) > 10) {
-    //     leftMotor->rotate(throttle-turn);
-    //     rightMotor->rotate(throttle+turn);
-    // }
-    // else {
-    //     leftMotor->rotate(0);
-    //     rightMotor->rotate(0);
-    // }
+    if (std::abs(throttle) + std::abs(turn) > 10) {
+        leftMotor->rotate(throttle-turn);
+        rightMotor->rotate(throttle+turn);
+    }
+    else {
+        leftMotor->rotate(0);
+        rightMotor->rotate(0);
+    }
 }
 
 void Drivetrain::debug() {
     //updateEncoder();
-    pids();
+    // pids();
 }
 
 void Drivetrain::debugScheduled() {
-    Serial.println("");
-    Serial.print("Output: ");
-    Serial.print(readEncoder(true));
+    // Serial.println("");
+    // Serial.print("Output: ");
+    // Serial.print(readEncoder(true));
 }
 
 void Drivetrain::pids() {
