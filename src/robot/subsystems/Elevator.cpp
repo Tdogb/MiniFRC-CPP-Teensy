@@ -69,7 +69,7 @@ void headingTask(int headingSetpoint) {
   elevatorRotationSetpoint = headingSetpoint;
   if (headingSetpoint != previousHeading) {
     rotationStepper.setTargetAbs((int32_t)(elevatorRotationSetpoint)); //(double)(elevatorRotationSetpoint) * 2.6)
-    Serial.println("Setting heading");
+    //Serial.println("Setting heading");
     if(-elevatorRotationSetpoint + heightOffset > 0) {
       leadscrewStepper.setTargetAbs((int32_t)(-elevatorRotationSetpoint + heightOffset));
     }
@@ -96,5 +96,5 @@ void debugElevator() {
   //   leadscrewStepper.setTargetRel(-2000);
   //   prevDebug = !prevDebug;
   // }
-  Serial.println("Pointer works!");
+  //Serial.println("Pointer works!");
 }

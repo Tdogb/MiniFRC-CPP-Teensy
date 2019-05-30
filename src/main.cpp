@@ -151,8 +151,7 @@ void mainMechanismsLoop() {
 }
 
 void mainScheduledMechanismsLoop() {
-  mechanisms->update();
-  Serial.println("mech update");
+  //mechanisms->update();
 }
 
 //Game controller
@@ -169,7 +168,7 @@ ButtonPressCounter intakeHatch;
 ButtonPressCounter outtakeHatch;
 
 void buttonHandler(int buttonID) {
-  Serial.println(buttonID);
+  //Serial.println(buttonID);
   switch (buttonID) {
   //ELEVATOR
   case X_BUTTON:
@@ -178,19 +177,19 @@ void buttonHandler(int buttonID) {
   case TRI_BUTTON:
     changeElevatorHeightState(true);
     break;
-  case DPAD_LEFT:
+  case SQR_BUTTON:
     changeElevatorRotationState(true);
     break;
-  case DPAD_RIGHT:
+  case O_BUTTON:
     changeElevatorRotationState(false);
     break;
   //MECHANISMS
-  case SQR_BUTTON:
-    mechanisms->setMechanismState(true,!mechanisms->previousBallState);
-    break;
-  case O_BUTTON:
-    mechanisms->setMechanismState(false,!mechanisms->previousBallState);
-    break;
+  // case SQR_BUTTON:
+  //   mechanisms->setMechanismState(true,!mechanisms->previousBallState);
+  //   break;
+  // case O_BUTTON:
+  //   mechanisms->setMechanismState(false,!mechanisms->previousBallState);
+  //   break;
   case L2:
     mechanisms->setIntakeOuttake(true,true,false);
     break;
@@ -211,7 +210,7 @@ void buttonHandler(int buttonID) {
 void mainGameControllerLoop() {
   robotSerial->update();
   averageThrottle += robotSerial->yLAxis;
-  averageTurn += robotSerial->xLAxis;
+  averageTurn += robotSerial->xRAxis;
   //Elevator
   xButtonCounter.update(&buttonHandler, robotSerial->buttons[X_BUTTON], X_BUTTON);
   triButtonCounter.update(&buttonHandler, robotSerial->buttons[TRI_BUTTON], TRI_BUTTON);
@@ -247,7 +246,7 @@ void changeElevatorHeightState(bool increment) {
 
 void changeElevatorRotationState(bool increment) {
   //FOR TESTING
-  Serial.println("changeElevatorRotationState");
+  //Serial.println("changeElevatorRotationState");
   if(setpointElevatorRotation == 0) { if(increment){setpointElevatorRotation+=10;}  }
   else {
       if(increment){setpointElevatorRotation+=10;} else {setpointElevatorRotation-=10;}

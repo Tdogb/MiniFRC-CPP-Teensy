@@ -4,7 +4,7 @@ class RobotSerial
 {
 private:
     unsigned long lastControlPacket = -10000;
-    uint8_t packet[5];
+    int8_t packet[8];
     bool disabled = false;
     int throttle = 0;
     int turn = 0;
@@ -20,11 +20,9 @@ public:
     // bool triangleButton = false;
     bool newData = false;
     bool buttons[12];
-
-    // Axes (range from -1.0 to 1.0, updated automatically)
-    int8_t xLAxis = 0.0;
-    int8_t yLAxis = 0.0;
-    int8_t xRAxis = 0.0;
-    int8_t yRAxis = 0.0;
+    int8_t xLAxis = 0;
+    int8_t yLAxis = 0;
+    int8_t xRAxis = 0;
+    int8_t yRAxis = 0;
     // double byteToDouble(uint8_t b);
 };

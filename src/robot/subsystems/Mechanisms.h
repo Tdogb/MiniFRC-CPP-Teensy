@@ -5,7 +5,7 @@ class Mechanisms
 private:
     static Mechanisms* singleInstance;
     void setMechanismTheta(bool ballMech, uint8_t theta);
-    uint8_t packet[6] = {0,0,0,0,0,0};
+    uint8_t packet[6] = {180,110,0,0,0,0};
 public:
     static Mechanisms* Instance();
     Mechanisms(/* args */);
