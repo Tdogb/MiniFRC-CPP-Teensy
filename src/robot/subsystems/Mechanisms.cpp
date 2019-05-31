@@ -1,7 +1,21 @@
 #include "Mechanisms.h"
 #include "robot/comms/Radio433.h"
+#include <stdint.h>
+#include <robot/defs.h>
 
-Radio433 radio;
+#define bts packetBits.bits
+
+struct Bits
+{
+    unsigned ballIntake_b:1, ballOuttake_b:1, hatchIntake_b:1, hatchOuttake_b:1;
+};
+union CBits
+{
+    Bits bits;
+    int8_t byte;
+};
+
+CBits packetBits;
 
 Mechanisms* Mechanisms::singleInstance = NULL;
 
@@ -12,9 +26,13 @@ Mechanisms* Mechanisms::Instance() {
     return singleInstance;
 }
 
+
 Mechanisms::Mechanisms(/* args */)
 {
-    radio.init();
+    //radio.init();
+    packet[3] = 0;
+    previousHatchState = false;
+    previousBallState = false;
 }
 
 Mechanisms::~Mechanisms()
@@ -22,15 +40,17 @@ Mechanisms::~Mechanisms()
 }
 
 void Mechanisms::update() {
-    radio.sendPacket(packet);
-    radio.update();
+    // radio.sendPacket(packet);
+    // radio.update();
+    
 }
 
-void Mechanisms::setMechanismTheta(bool ballMech, uint8_t theta) {
+void Mechanisms::setMechanismTheta(bool ballMech, int8_t theta) {
     // uint8_t ballTheta;
     // uint8_t hatchTheta;
     // bool ballEnabled;
     // bool hatchEnabled;
+    Serial.println("Theta set");
     if(ballMech) {
         packet[0] = theta;
     }
@@ -41,34 +61,36 @@ void Mechanisms::setMechanismTheta(bool ballMech, uint8_t theta) {
 
 void Mechanisms::setMechanismState(bool ballMech, bool deployed) {
     if(ballMech) {
-        setMechanismTheta(ballMech, (uint8_t)(deployed ? 100:150));
+        setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
         previousBallState = deployed;
     }
     else {
-        setMechanismTheta(ballMech, (uint8_t)(deployed ? 100:190));
+        setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
         previousHatchState = deployed;
     }
 }
 
 void Mechanisms::setIntakeOuttake(bool ballMech, bool intake, bool outtake) {
+    Serial.println("Intake mode set");
     if(ballMech) {
         if(intake) {
-            packet[2] = 255;
-            packet[3] = 0;
+            bts.ballOuttake_b = 0;
+            bts.ballIntake_b = 1;
         }
         else if(outtake) {
-            packet[2] = 0;
-            packet[3] = 255;
+            bts.ballIntake_b = 0;
+            bts.ballOuttake_b = 1;
         }
     }
     else {
         if(intake) {
-            packet[4] = 255;
-            packet[5] = 0;
+            bts.hatchOuttake_b = 0;
+            bts.hatchIntake_b = 1;
         }
         else if(outtake) {
-            packet[4] = 0;
-            packet[5] = 255;
+            bts.hatchIntake_b = 0;
+            bts.hatchOuttake_b = 1;
         }
     }
+    packet[2] = packetBits.byte;
 }

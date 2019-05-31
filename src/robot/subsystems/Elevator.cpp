@@ -1,8 +1,9 @@
 #include "Elevator.h"
-#include <robot/util/Queue.h>
+#include "robot/util/Queue.h"
+#include "robot/defs.h"
 
-Stepper rotationStepper(29,30); //step pin, dir pin
-Stepper leadscrewStepper(6,12);
+Stepper rotationStepper(ROTATION_STEP_PIN, ROTATION_DIR_PIN); //step pin, dir pin
+Stepper leadscrewStepper(LEADSCREW_STEP_PIN,LEADSCREW_DIR_PIN);
 StepControl rotationController;
 StepControl leadscrewController;
 Queue heightQueue;

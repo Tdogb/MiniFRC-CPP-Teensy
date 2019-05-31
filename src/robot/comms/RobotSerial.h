@@ -4,7 +4,7 @@ class RobotSerial
 {
 private:
     unsigned long lastControlPacket = -10000;
-    int8_t packet[8];
+    int8_t packet[8] = {0,0,0,0,0,0,0,0};
     bool disabled = false;
     int throttle = 0;
     int turn = 0;
@@ -14,6 +14,7 @@ private:
 public:
     static RobotSerial* Instance();
     void update();
+    void writeBT(int8_t _message[]);
     // bool squareButton = false;
     // bool xButton = false;
     // bool oButton = false;

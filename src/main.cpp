@@ -51,6 +51,7 @@ void mainScheduledMechanismsLoop();
 void mainScheduledGameControllerLoop();
 
 void buttonHandler();
+void dpadHandler();
 void buttonSetup();
 void updateMechanismStates(int buttonID);
 
@@ -72,6 +73,7 @@ long loopCount = 0;
 #define updateClockRate 100
 
 Chrono schedular(Chrono::MILLIS);
+Chrono radioSchedular(Chrono::MILLIS);
 
 void setup() {
   Serial.begin(9600);
@@ -90,6 +92,9 @@ void loop() {
     mainScheduledGameControllerLoop();
     mainScheduledElevatorLoop();
     mainScheduledDrivetrainLoop();
+  }
+  if(radioSchedular.hasPassed(200)) {
+    radioSchedular.restart();
     mainScheduledMechanismsLoop();
   }
 }
@@ -152,6 +157,8 @@ void mainMechanismsLoop() {
 
 void mainScheduledMechanismsLoop() {
   //mechanisms->update();
+  mechanisms->packet[ML-1] = 126;
+  robotSerial->writeBT(mechanisms->packet);
 }
 
 //Game controller
@@ -160,15 +167,17 @@ ButtonPressCounter triButtonCounter;
 ButtonPressCounter dpadLeftButtonCounter;
 ButtonPressCounter dpadRightButtonCounter;
 
-ButtonPressCounter deployBallIntake;
-ButtonPressCounter deployHatchMech;
+ButtonPressCounter sqrButtonCounter;
+ButtonPressCounter oButtonCounter;
 ButtonPressCounter intakeBall;
 ButtonPressCounter outtakeBall;
 ButtonPressCounter intakeHatch;
 ButtonPressCounter outtakeHatch;
 
 void buttonHandler(int buttonID) {
-  //Serial.println(buttonID);
+  Serial.println("");
+  Serial.print("Button ID: ");
+  Serial.print(buttonID);
   switch (buttonID) {
   //ELEVATOR
   case X_BUTTON:
@@ -184,12 +193,14 @@ void buttonHandler(int buttonID) {
     changeElevatorRotationState(false);
     break;
   //MECHANISMS
-  // case SQR_BUTTON:
-  //   mechanisms->setMechanismState(true,!mechanisms->previousBallState);
-  //   break;
-  // case O_BUTTON:
-  //   mechanisms->setMechanismState(false,!mechanisms->previousBallState);
-  //   break;
+  case DPAD_LEFT:
+    mechanisms->setMechanismState(true,!mechanisms->previousBallState);
+    Serial.println("dpad up");
+    break;
+  case DPAD_RIGHT:
+    mechanisms->setMechanismState(false,!mechanisms->previousHatchState);
+    Serial.println("dpad down");
+    break;
   case L2:
     mechanisms->setIntakeOuttake(true,true,false);
     break;
@@ -217,8 +228,8 @@ void mainGameControllerLoop() {
   dpadLeftButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_LEFT], DPAD_LEFT);
   dpadRightButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_RIGHT], DPAD_RIGHT);
   //Mechanisms
-  deployBallIntake.update(&buttonHandler, robotSerial->buttons[SQR_BUTTON], SQR_BUTTON);
-  deployHatchMech.update(&buttonHandler, robotSerial->buttons[O_BUTTON], O_BUTTON);
+  sqrButtonCounter.update(&buttonHandler, robotSerial->buttons[SQR_BUTTON], SQR_BUTTON);
+  oButtonCounter.update(&buttonHandler, robotSerial->buttons[O_BUTTON], O_BUTTON);
   intakeBall.update(&buttonHandler, robotSerial->buttons[L2], L2);
   outtakeBall.update(&buttonHandler, robotSerial->buttons[L1], L1);
   intakeHatch.update(&buttonHandler, robotSerial->buttons[R2], R2);
