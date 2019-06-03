@@ -1,12 +1,13 @@
 #include <robot/motor/Brushed.h>
+#include "robot/defs.h"
 #include <stdint.h>
 
 class Drivetrain
 {
 private:
     Drivetrain();
-    Brushed* leftMotor = new Brushed(2,3);
-    Brushed* rightMotor = new Brushed(4,7);  
+    Brushed* leftMotor = new Brushed(L_MOTOR_FWD,L_MOTOR_RVS, L_MOTOR_EN, true);
+    Brushed* rightMotor = new Brushed(R_MOTOR_FWD, R_MOTOR_RVS, R_MOTOR_EN, true);  
     static Drivetrain* singleInstance;
     void pids();
 public:

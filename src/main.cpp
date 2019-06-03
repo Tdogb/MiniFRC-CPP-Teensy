@@ -9,8 +9,10 @@
 #include <TeensyStep.h>
 #include <robot/subsystems/Drivetrain.h>
 #include <robot/util/ButtonPressCounter.h>
+#include "robot/util/ButtonHoldCounter.h"
 #include <robot/util/Queue.h>
 #include "robot/subsystems/Mechanisms.h"
+//#include "robot/superstructure_v2/Superstructure.h"
 
 #define robotSerial RobotSerial::Instance()
 #define drivetrain Drivetrain::Instance()
@@ -56,7 +58,7 @@ void buttonSetup();
 void updateMechanismStates(int buttonID);
 
 void changeElevatorHeightState(bool increment);
-void changeElevatorRotationState(bool increment);
+void changeElevatorRotationState(bool increment, int stepAmmount);
 
 void debugInit();
 void debugLoop();
@@ -92,6 +94,7 @@ void loop() {
     mainScheduledGameControllerLoop();
     mainScheduledElevatorLoop();
     mainScheduledDrivetrainLoop();
+    debugQueue();
   }
   if(radioSchedular.hasPassed(200)) {
     radioSchedular.restart();
@@ -138,19 +141,6 @@ void mainScheduledElevatorLoop() {
 
 //Mechanisms
 
-
-// void updateMechanismStates(int buttonID) {
-//   switch (buttonID)
-//   {
-//   case SQR_BUTTON:
-//     mechanisms->setMechanismState(true,!mechanisms->previousBallState);
-//     break;
-  
-//   default:
-//     break;
-//   }
-// }
-
 void mainMechanismsLoop() {
   
 }
@@ -158,61 +148,57 @@ void mainMechanismsLoop() {
 void mainScheduledMechanismsLoop() {
   //mechanisms->update();
   mechanisms->packet[ML-1] = 126;
+  Serial.println("");
+  for(int i = 0; i < ML; i++) {
+    Serial.print(mechanisms->packet[i]);
+    Serial.print(" ");
+  }
   robotSerial->writeBT(mechanisms->packet);
 }
-
 //Game controller
 ButtonPressCounter xButtonCounter;
 ButtonPressCounter triButtonCounter;
 ButtonPressCounter dpadLeftButtonCounter;
 ButtonPressCounter dpadRightButtonCounter;
+ButtonPressCounter elevatorLevelDown;
+ButtonPressCounter elevatorLevelUp;
 
 ButtonPressCounter sqrButtonCounter;
 ButtonPressCounter oButtonCounter;
-ButtonPressCounter intakeBall;
+ButtonHoldCounter intakeBall;
 ButtonPressCounter outtakeBall;
 ButtonPressCounter intakeHatch;
 ButtonPressCounter outtakeHatch;
 
 void buttonHandler(int buttonID) {
-  Serial.println("");
-  Serial.print("Button ID: ");
+  //Serial.println("");
+  //Serial.print("Button ID: ");
   Serial.print(buttonID);
   switch (buttonID) {
   //ELEVATOR
-  case X_BUTTON:
+  case LEVEL_DOWN:
     changeElevatorHeightState(false);
+    //debug temp
+    //mechanisms->setMechanismState(false,!mechanisms->previousHatchState);
     break;
-  case TRI_BUTTON:
+  case LEVEL_UP:
     changeElevatorHeightState(true);
+    //debug temp
+    //mechanisms->setMechanismState(true,!mechanisms->previousBallState);
     break;
-  case SQR_BUTTON:
-    changeElevatorRotationState(true);
+  case ROTATION_LEFT_FINE:
+    changeElevatorRotationState(true, 10);
     break;
-  case O_BUTTON:
-    changeElevatorRotationState(false);
+  case ROTATION_RIGHT_FINE:
+    changeElevatorRotationState(false, 10);
+    break;
+  case ROTATION_LEFT_COURSE:
+    changeElevatorRotationState(true, 130);
+    break;
+  case ROTATION_RIGHT_COURSE:
+    changeElevatorRotationState(false, 130);
     break;
   //MECHANISMS
-  case DPAD_LEFT:
-    mechanisms->setMechanismState(true,!mechanisms->previousBallState);
-    Serial.println("dpad up");
-    break;
-  case DPAD_RIGHT:
-    mechanisms->setMechanismState(false,!mechanisms->previousHatchState);
-    Serial.println("dpad down");
-    break;
-  case L2:
-    mechanisms->setIntakeOuttake(true,true,false);
-    break;
-  case L1:
-    mechanisms->setIntakeOuttake(true,false,true);
-    break;
-  case R2:
-    mechanisms->setIntakeOuttake(false,true,false);
-    break;
-  case R1:
-    mechanisms->setIntakeOuttake(false,false,true);
-    break;
   default:
     break;
   }
@@ -227,13 +213,18 @@ void mainGameControllerLoop() {
   triButtonCounter.update(&buttonHandler, robotSerial->buttons[TRI_BUTTON], TRI_BUTTON);
   dpadLeftButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_LEFT], DPAD_LEFT);
   dpadRightButtonCounter.update(&buttonHandler, robotSerial->buttons[DPAD_RIGHT], DPAD_RIGHT);
+  elevatorLevelUp.update(&buttonHandler, robotSerial->buttons[LEVEL_UP], LEVEL_UP);
+  elevatorLevelDown.update(&buttonHandler, robotSerial->buttons[LEVEL_DOWN], LEVEL_DOWN);
   //Mechanisms
   sqrButtonCounter.update(&buttonHandler, robotSerial->buttons[SQR_BUTTON], SQR_BUTTON);
   oButtonCounter.update(&buttonHandler, robotSerial->buttons[O_BUTTON], O_BUTTON);
-  intakeBall.update(&buttonHandler, robotSerial->buttons[L2], L2);
-  outtakeBall.update(&buttonHandler, robotSerial->buttons[L1], L1);
-  intakeHatch.update(&buttonHandler, robotSerial->buttons[R2], R2);
-  outtakeHatch.update(&buttonHandler, robotSerial->buttons[R1], R1);
+
+  mechanisms->setIntakeOuttake(true,robotSerial->buttons[BALL_INTAKE], robotSerial->buttons[BALL_OUTTAKE]);
+  mechanisms->setIntakeOuttake(false, robotSerial->buttons[HATCH_INTAKE], robotSerial->buttons[HATCH_OUTTAKE]);
+  //intakeBall.update(&buttonHandler, robotSerial->buttons[BALL_INTAKE], BALL_INTAKE);
+  //outtakeBall.update(&buttonHandler, robotSerial->buttons[BALL_OUTTAKE], BALL_OUTTAKE);
+  //intakeHatch.update(&buttonHandler, robotSerial->buttons[HATCH_INTAKE], HATCH_INTAKE);
+  //outtakeHatch.update(&buttonHandler, robotSerial->buttons[HATCH_OUTTAKE], HATCH_OUTTAKE);
 
   loopCount++;
 }
@@ -243,24 +234,30 @@ void mainScheduledGameControllerLoop() {
 }
 
 void changeElevatorHeightState(bool increment) {
-  // Serial.println("");
-  // Serial.print("Setpoint: ");
-  // Serial.print(setpointElevatorHeight);
-  // Serial.print(" increment ");
-  // Serial.print(increment);
-  if(setpointElevatorHeight == 0) { if(increment){setpointElevatorHeight++;}  }
+  mechanisms->setMechanismState(false,false);
+  if(setpointElevatorHeight == 0) {
+     if(increment){
+       setpointElevatorHeight++;
+       mechanisms->setMechanismState(true,false);
+     }  
+  }
   else if(setpointElevatorHeight == CARGO_3) {  if(!increment){setpointElevatorHeight--;} }
   else {
       if(increment){setpointElevatorHeight++;} else {setpointElevatorHeight--;}
   }
+  if(setpointElevatorHeight == 0) {
+    mechanisms->setMechanismState(true,true);
+  }
 }
 
-void changeElevatorRotationState(bool increment) {
-  //FOR TESTING
-  //Serial.println("changeElevatorRotationState");
-  if(setpointElevatorRotation == 0) { if(increment){setpointElevatorRotation+=10;}  }
+void changeElevatorRotationState(bool increment, int stepAmmount) { //130 FOR COURSE
+  if(setpointElevatorRotation == 0) {
+     if(increment){
+       setpointElevatorRotation+=stepAmmount;
+     }  
+  }
   else {
-      if(increment){setpointElevatorRotation+=10;} else {setpointElevatorRotation-=10;}
+      if(increment){setpointElevatorRotation+=stepAmmount;} else {setpointElevatorRotation-=stepAmmount;}
   }
 }
 
@@ -271,7 +268,6 @@ void debugInit() {
 }
 
 void debugQueue() {
-  //queue.addToQueue(&debugElevator);
 }
 
 void debugLoop() {

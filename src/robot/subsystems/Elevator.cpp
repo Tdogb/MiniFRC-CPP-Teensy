@@ -51,11 +51,6 @@ void updateElevator() {
   if(!leadscrewController.isRunning() && (elevatorHeightSetpoint != leadscrewStepper.getPosition())) {
     leadscrewController.moveAsync(leadscrewStepper);
   }
-  // Serial.println("");
-  // Serial.print("Stepper position: ");
-  // Serial.print(rotationStepper.getPosition());
-  // Serial.print(" Setpoint: ");
-  // Serial.print(elevatorRotationSetpoint);
 }
 
 void height(int heightSetpoint) {
@@ -70,7 +65,6 @@ void headingTask(int headingSetpoint) {
   elevatorRotationSetpoint = headingSetpoint;
   if (headingSetpoint != previousHeading) {
     rotationStepper.setTargetAbs((int32_t)(elevatorRotationSetpoint)); //(double)(elevatorRotationSetpoint) * 2.6)
-    //Serial.println("Setting heading");
     if(-elevatorRotationSetpoint + heightOffset > 0) {
       leadscrewStepper.setTargetAbs((int32_t)(-elevatorRotationSetpoint + heightOffset));
     }
@@ -80,22 +74,6 @@ void headingTask(int headingSetpoint) {
 
 void heightTask(int heightSetpoint) {
   elevatorHeightSetpoint = heightSetpoint;
-  //Serial.println(heightSetpoint);
   leadscrewStepper.setTargetAbs((int32_t)(elevatorHeightSetpoint));
   heightOffset = heightSetpoint;
-}
-
-bool prevDebug = false;
-void debugElevator() {
-  // if(prevDebug) {
-  //   rotationStepper.setTargetRel(2000);
-  //   leadscrewStepper.setTargetRel(2000);
-  //   prevDebug = !prevDebug;
-  // }
-  // else {
-  //   rotationStepper.setTargetRel(-2000);
-  //   leadscrewStepper.setTargetRel(-2000);
-  //   prevDebug = !prevDebug;
-  // }
-  //Serial.println("Pointer works!");
 }

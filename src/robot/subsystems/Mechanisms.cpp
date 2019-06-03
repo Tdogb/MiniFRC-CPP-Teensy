@@ -12,7 +12,7 @@ struct Bits
 union CBits
 {
     Bits bits;
-    int8_t byte;
+    int8_t byteC;
 };
 
 CBits packetBits;
@@ -70,27 +70,38 @@ void Mechanisms::setMechanismState(bool ballMech, bool deployed) {
     }
 }
 
+int8_t ballIntakeP = 0; //Each part of the byte
+int8_t hatchP = 0;
+
 void Mechanisms::setIntakeOuttake(bool ballMech, bool intake, bool outtake) {
-    Serial.println("Intake mode set");
-    if(ballMech) {
-        if(intake) {
-            bts.ballOuttake_b = 0;
-            bts.ballIntake_b = 1;
+    //Serial.println("Intake mode set");
+    // if(ballMech) {
+    //     if(intake) {
+    //         bts.ballOuttake_b = 0;
+    //         bts.ballIntake_b = 1;
+    //     }
+    //     else if(outtake) {
+    //         bts.ballIntake_b = 0;
+    //         bts.ballOuttake_b = 1;
+    //     }
+    // }
+    // else {
+    //     if(intake) {
+    //         bts.hatchOuttake_b = 0;
+    //         bts.hatchIntake_b = 1;
+    //     }
+    //     else if(outtake) {
+    //         bts.hatchIntake_b = 0;
+    //         bts.hatchOuttake_b = 1;
+    //     }
+        //TEMP DEBUG
+        if(ballMech) {
+            ballIntakeP = (int8_t)((intake ? 1 : 0) + (outtake ? 2 : 0));
         }
-        else if(outtake) {
-            bts.ballIntake_b = 0;
-            bts.ballOuttake_b = 1;
+        else {
+            hatchP = (int8_t)((intake ? 4 : 0) + (outtake ? 8 : 0));
         }
-    }
-    else {
-        if(intake) {
-            bts.hatchOuttake_b = 0;
-            bts.hatchIntake_b = 1;
-        }
-        else if(outtake) {
-            bts.hatchIntake_b = 0;
-            bts.hatchOuttake_b = 1;
-        }
-    }
-    packet[2] = packetBits.byte;
+    // }
+    packet[2] = ballIntakeP + hatchP;
+    //Serial.println(packetBits.byteC);
 }

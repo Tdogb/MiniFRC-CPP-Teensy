@@ -13,6 +13,22 @@
 #define DPAD_DOWN 10
 #define DPAD_LEFT 11
 
+//Controls
+
+#define LEVEL_UP DPAD_UP
+#define LEVEL_DOWN DPAD_DOWN
+#define ROTATION_LEFT_COURSE DPAD_LEFT
+#define ROTATION_RIGHT_COURSE DPAD_RIGHT
+#define ROTATION_LEFT_FINE SQR_BUTTON
+#define ROTATION_RIGHT_FINE O_BUTTON
+#define THROTTLE_AXIS yLAxis
+#define TURN_AXIS xRAxis
+#define BALL_INTAKE R2
+#define BALL_OUTTAKE R1
+#define HATCH_INTAKE L2
+#define HATCH_OUTTAKE L1
+
+//Packet size
 #define ML 4
 
 //Pins
@@ -22,9 +38,9 @@
 #define LEADSCREW_DIR_PIN 30
 
 #define R_MOTOR_FWD 6
-#define R_MOTOR_RVS 7
-#define R_MOTOR_EN 2
+#define R_MOTOR_RVS 5
+#define R_MOTOR_EN 1
 
-#define L_MOTOR_FWD 4
-#define L_MOTOR_RVS 5
-#define L_MOTOR_EN 3
+#define L_MOTOR_FWD 3
+#define L_MOTOR_RVS 4
+#define L_MOTOR_EN 2
