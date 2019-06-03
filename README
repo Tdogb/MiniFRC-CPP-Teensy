@@ -1,0 +1,9 @@
+MiniFRC robot code written in c++ for the Teensy microcontroller using PlatformIO vscode plugin
+
+- Elevator with absolute control on all axis (turret and height)
+- Wireless communication between driverstation and elevator stage
+- All methods asyncronous
+
+TODO:
+- Finish superstructure collision avoidance
+- Speed up turreting
