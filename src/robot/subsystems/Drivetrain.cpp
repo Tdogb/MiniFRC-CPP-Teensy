@@ -24,7 +24,7 @@ Drivetrain* Drivetrain::Instance() {
 
 Drivetrain::Drivetrain()
 {
-    init();
+    encoderInit();
 }
 
 void Drivetrain::updateControls(int8_t throttleAxis, int8_t turningAxis) { //Replace with pointers and change serial to singleton
@@ -34,8 +34,8 @@ void Drivetrain::updateControls(int8_t throttleAxis, int8_t turningAxis) { //Rep
 
 void Drivetrain::updateDrivetrain() {
     if (std::abs(throttle) + std::abs(turn) > 10) {
-        leftMotor->rotate(throttle-turn);
-        rightMotor->rotate(throttle+turn);
+        leftMotor->rotate(throttle+turn);
+        rightMotor->rotate(throttle-turn);
     }
     else {
         leftMotor->rotate(0);
@@ -44,11 +44,12 @@ void Drivetrain::updateDrivetrain() {
 }
 
 void Drivetrain::debug() {
-    //updateEncoder();
-    // pids();
+    updateEncoder();
+    
 }
 
 void Drivetrain::debugScheduled() {
+    pids();
     // Serial.println("");
     // Serial.print("Output: ");
     // Serial.print(readEncoder(true));
@@ -56,5 +57,10 @@ void Drivetrain::debugScheduled() {
 
 void Drivetrain::pids() {
     int16_t output = pidLeft.step(2000,(int16_t)(readEncoder(true)*100));
-    rightMotor->rotate(output);
+    Serial.println("");
+    Serial.print("Left: ");
+    Serial.print(readEncoder(true)*100);
+    Serial.print(" Right: ");
+    Serial.print(readEncoder(false)*100);
+    //rightMotor->rotate(output);
 }

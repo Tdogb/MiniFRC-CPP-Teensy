@@ -44,3 +44,6 @@
 #define L_MOTOR_FWD 3
 #define L_MOTOR_RVS 4
 #define L_MOTOR_EN 2
+
+#define R_ENC_A 9
+#define L_ENC_A 10

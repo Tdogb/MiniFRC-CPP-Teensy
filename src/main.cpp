@@ -19,7 +19,7 @@
 #define mechanisms Mechanisms::Instance()
 
 //2mm pitch. Every one rotation is 2mm up
-int elevatorHeightsMM[] = {0,116,170};
+int elevatorHeightsMM[] = {0,232,1000,4000}; //11600, 17000
 //0, hatch cargo
 #define HATCH_OFFSET 232
 #define CARGO_OFFSET 340
@@ -59,6 +59,7 @@ void updateMechanismStates(int buttonID);
 
 void changeElevatorHeightState(bool increment);
 void changeElevatorRotationState(bool increment, int stepAmmount);
+void avoidCollisionRotation();
 
 void debugInit();
 void debugLoop();
@@ -125,11 +126,14 @@ void mainScheduledElevatorLoop() {
     if(setpointElevatorHeight == 0) {
       height(0);
     }
-    else if(setpointElevatorHeight % 2 == 0) {
-      height((setpointElevatorHeight-1)*CARGO_OFFSET);
-    }
+    // else if(setpointElevatorHeight % 2 == 0) {
+    //   //height((setpointElevatorHeight-1)*CARGO_OFFSET);
+    //   height(elevatorHeightsMM[setpointElevatorHeight-1]);
+    // }
     else {
-      height(setpointElevatorHeight*HATCH_OFFSET);
+      //height(setpointElevatorHeight*HATCH_OFFSET);
+      height(elevatorHeightsMM[setpointElevatorHeight]);
+
     }
     currentElevatorHeight = setpointElevatorHeight;
   }
@@ -199,6 +203,10 @@ void buttonHandler(int buttonID) {
     changeElevatorRotationState(false, 130);
     break;
   //MECHANISMS
+  case TRI_BUTTON:
+    //mechanisms->setMechanismState(false,false, -1);
+    zero();
+    break;
   default:
     break;
   }
@@ -234,30 +242,55 @@ void mainScheduledGameControllerLoop() {
 }
 
 void changeElevatorHeightState(bool increment) {
-  mechanisms->setMechanismState(false,false);
+  //mechanisms->setMechanismState(false,false, -1);
   if(setpointElevatorHeight == 0) {
      if(increment){
        setpointElevatorHeight++;
-       mechanisms->setMechanismState(true,false);
      }  
   }
-  else if(setpointElevatorHeight == CARGO_3) {  if(!increment){setpointElevatorHeight--;} }
+  else if(setpointElevatorHeight == sizeof(elevatorHeightsMM)) {  if(!increment){setpointElevatorHeight--;} }
   else {
       if(increment){setpointElevatorHeight++;} else {setpointElevatorHeight--;}
   }
   if(setpointElevatorHeight == 0) {
-    mechanisms->setMechanismState(true,true);
+    mechanisms->setMechanismState(true,true, -1);
+    avoidCollisionRotation();
   }
+  else if(setpointElevatorHeight == 1) {
+    mechanisms->setMechanismState(true,false, 50);
+  }
+  else if(setpointElevatorHeight == 2) {
+    mechanisms->setMechanismState(true,false, 80);
+  }
+  else if(setpointElevatorHeight == 3) {
+
+  }
+  avoidCollisionRotation();
 }
 
 void changeElevatorRotationState(bool increment, int stepAmmount) { //130 FOR COURSE
-  if(setpointElevatorRotation == 0) {
-     if(increment){
-       setpointElevatorRotation+=stepAmmount;
-     }  
-  }
-  else {
+  // if(setpointElevatorRotation == 0) {
+  //    if(increment){
+  //      setpointElevatorRotation+=stepAmmount;
+  //    }  
+  // }
+  // else {
       if(increment){setpointElevatorRotation+=stepAmmount;} else {setpointElevatorRotation-=stepAmmount;}
+  // }
+}
+/*
+1135
+95
+*/
+void avoidCollisionRotation() {
+  int relSteps = setpointElevatorRotation % 520;
+  if(setpointElevatorHeight == GROUND) {
+     if(relSteps < 130 && relSteps > 90) {
+       setpointElevatorRotation = setpointElevatorRotation - (relSteps - 110);
+     } 
+     else if(relSteps > -130 && relSteps < -90) {
+       setpointElevatorRotation = setpointElevatorRotation - (relSteps - 110);
+     }
   }
 }
 

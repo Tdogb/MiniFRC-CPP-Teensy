@@ -1,4 +1,4 @@
 double readEncoder(bool leftSide);
-void init();
+void encoderInit();
 void updateEncoder();
 

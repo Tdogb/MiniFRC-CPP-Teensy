@@ -12,7 +12,7 @@ public:
     Mechanisms(/* args */);
     ~Mechanisms();
     void update();
-    void setMechanismState(bool ballMech, bool deployed);
+    void setMechanismState(bool ballMech, bool deployed, int theta);
     void setIntakeOuttake(bool ballMech, bool intake, bool outtake);
     bool previousBallState;
     bool previousHatchState;

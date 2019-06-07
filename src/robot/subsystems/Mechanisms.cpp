@@ -50,7 +50,7 @@ void Mechanisms::setMechanismTheta(bool ballMech, int8_t theta) {
     // uint8_t hatchTheta;
     // bool ballEnabled;
     // bool hatchEnabled;
-    Serial.println("Theta set");
+    //Serial.println("Theta set");
     if(ballMech) {
         packet[0] = theta;
     }
@@ -59,13 +59,24 @@ void Mechanisms::setMechanismTheta(bool ballMech, int8_t theta) {
     }
 }
 
-void Mechanisms::setMechanismState(bool ballMech, bool deployed) {
+void Mechanisms::setMechanismState(bool ballMech, bool deployed, int theta) {
     if(ballMech) {
-        setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
+        if(theta >= 0) {
+            setMechanismTheta(ballMech, theta);
+        }
+        else {
+            setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
+        }
         previousBallState = deployed;
     }
     else {
-        setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
+        // if(theta > 0) {
+        //     setMechanismTheta(ballMech, theta);
+        // }
+        // else {
+            setMechanismTheta(ballMech, (int8_t)(deployed ? 0:90));
+
+        // }
         previousHatchState = deployed;
     }
 }

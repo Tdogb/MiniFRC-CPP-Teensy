@@ -8,3 +8,4 @@ void headingTask(int headingSetpoint);
 void heightTask(int heightSetpoint);
 void debugElevator();
 void heightRel(int heightSetpoint);
+void zero();

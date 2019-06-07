@@ -11,6 +11,7 @@ Queue rotationQueue;
 
 bool leadscrewRunning = false;
 bool rotationRunning = false;
+bool wantToStop = false;
 
 int elevatorRotation = 0;
 int elevatorRotationSetpoint = 0;
@@ -25,10 +26,11 @@ int previousHeading = 0;
 
 void initElevator()
 {
-  rotationStepper.setAcceleration(900);
-  rotationStepper.setMaxSpeed(2000);
-  leadscrewStepper.setAcceleration(800);
-  leadscrewStepper.setMaxSpeed(1000);
+  rotationStepper.setAcceleration(4000);
+  rotationStepper.setMaxSpeed(25000);
+
+  leadscrewStepper.setAcceleration(30000);
+  leadscrewStepper.setMaxSpeed(130000);
   // rotationStepper.setPosition(0);
   // leadscrewStepper.setPosition(0);
   rotationStepper.setTargetAbs(0);
@@ -42,12 +44,19 @@ void updateElevator() {
   rotationRunning = rotationController.isRunning();
   heightQueue.update();
   rotationQueue.update();
-  if(!rotationController.isOk() || !leadscrewController.isOk()) {
-    Serial.println("TOO MANY FTM TIMERS USED");
-  }
+  // if(!rotationController.isOk() || !leadscrewController.isOk()) {
+  //   Serial.println("TOO MANY FTM TIMERS USED");
+  // }
+  // if(wantToStop) {
+  //   rotationController.stopAsync();
+  // }
   if(!rotationController.isRunning() && (elevatorRotationSetpoint != rotationStepper.getPosition())) {
+    //wantToStop = false;
     rotationController.moveAsync(rotationStepper);
   }
+  // else {
+  //   wantToStop = false;
+  // }
   if(!leadscrewController.isRunning() && (elevatorHeightSetpoint != leadscrewStepper.getPosition())) {
     leadscrewController.moveAsync(leadscrewStepper);
   }
@@ -58,6 +67,9 @@ void height(int heightSetpoint) {
 }
 
 void heading(int headingSetpoint) {
+  // if(rotationController.isRunning()) {
+  //   wantToStop = true;
+  // }
   rotationQueue.addToQueue(&headingTask, headingSetpoint);
 }
 
@@ -76,4 +88,8 @@ void heightTask(int heightSetpoint) {
   elevatorHeightSetpoint = heightSetpoint;
   leadscrewStepper.setTargetAbs((int32_t)(elevatorHeightSetpoint));
   heightOffset = heightSetpoint;
+}
+
+void zero() {
+  leadscrewStepper.setPosition(0);
 }

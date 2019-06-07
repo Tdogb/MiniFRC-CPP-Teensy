@@ -1,9 +1,7 @@
 #include <IntervalTimer.h>
 #include <Encoder.h>
 #include "RobotEncoder.h"
-
-#define encPinALeft 8
-#define encPinARight 9
+#include <robot/defs.h>
 
 IntervalTimer encoderUpdate;
 elapsedMicros time_left;
@@ -16,22 +14,22 @@ const int cpr = 256;
 volatile double encSpeed_right = 0;
 volatile double encSpeed_left = 0;
 
-void init()
+void encoderInit()
 {
-    pinMode(encPinALeft, INPUT);
-    pinMode(encPinARight, INPUT);
+    pinMode(L_ENC_A, INPUT);
+    pinMode(R_ENC_A, INPUT);
     encoderUpdate.begin(updateEncoder, 10);
 }
 
 void updateEncoder()
 {
-  //encSpeed_left = digitalReadFast(encPinALeft);
-  if(digitalReadFast(encPinALeft) != lastTick_left) {
+  //encSpeed_left = digitalReadFast(L_ENC_A);
+  if(digitalReadFast(L_ENC_A) != lastTick_left) {
     encSpeed_left = (((2*PI)/(((double)(time_left)/(double)100000)*cpr))/2); //((time_left/1000000)/cpr)/2; //rev/sec
     lastTick_left = !lastTick_left;
     time_left = 0;
   }
-  if(digitalReadFast(encPinARight) != lastTick_right) {
+  if(digitalReadFast(R_ENC_A) != lastTick_right) {
     encSpeed_right = (((2*PI)/(((double)(time_right)/(double)100000)*cpr))/2); //((time_left/1000000)/cpr)/2; //rev/sec
     lastTick_right = !lastTick_right;
     time_right = 0;
