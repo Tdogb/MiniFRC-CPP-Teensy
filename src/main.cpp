@@ -77,6 +77,7 @@ long loopCount = 0;
 
 Chrono schedular(Chrono::MILLIS);
 Chrono radioSchedular(Chrono::MILLIS);
+Chrono pidLoop(Chrono::MICROS);
 
 void setup() {
   Serial.begin(9600);
@@ -100,6 +101,9 @@ void loop() {
   if(radioSchedular.hasPassed(200)) {
     radioSchedular.restart();
     mainScheduledMechanismsLoop();
+  }
+  if(pidLoop.hasPassed(10)) {
+    drivetrain->pids();
   }
 }
 
@@ -152,10 +156,10 @@ void mainMechanismsLoop() {
 void mainScheduledMechanismsLoop() {
   //mechanisms->update();
   mechanisms->packet[ML-1] = 126;
-  Serial.println("");
+  //Serial.println("");
   for(int i = 0; i < ML; i++) {
-    Serial.print(mechanisms->packet[i]);
-    Serial.print(" ");
+    //Serial.print(mechanisms->packet[i]);
+    //Serial.print(" ");
   }
   robotSerial->writeBT(mechanisms->packet);
 }
@@ -177,7 +181,7 @@ ButtonPressCounter outtakeHatch;
 void buttonHandler(int buttonID) {
   //Serial.println("");
   //Serial.print("Button ID: ");
-  Serial.print(buttonID);
+  //Serial.print(buttonID);
   switch (buttonID) {
   //ELEVATOR
   case LEVEL_DOWN:

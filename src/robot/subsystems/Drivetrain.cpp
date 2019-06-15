@@ -5,10 +5,10 @@
 #include <FastPID.h>
 #include <robot/sensor/RobotEncoder.h>
 
-#define Kp 1
-#define Ki 0.01
-#define Kd 0.1
-#define updateFreq 100
+#define Kp 50
+#define Ki 0
+#define Kd 0
+#define updateFreq 100000
 
 FastPID pidLeft(Kp, Ki, Kd, updateFreq, 8, false);
 FastPID pidRight(Kp, Ki, Kd, updateFreq, 8, false);
@@ -33,34 +33,40 @@ void Drivetrain::updateControls(int8_t throttleAxis, int8_t turningAxis) { //Rep
 }
 
 void Drivetrain::updateDrivetrain() {
-    if (std::abs(throttle) + std::abs(turn) > 10) {
-        leftMotor->rotate(throttle+turn);
-        rightMotor->rotate(throttle-turn);
-    }
-    else {
-        leftMotor->rotate(0);
-        rightMotor->rotate(0);
-    }
+    // if (std::abs(throttle) + std::abs(turn) > 10) {
+    //     leftMotor->rotate(throttle+turn);
+    //     rightMotor->rotate(throttle-turn);
+    // }
+    // else {
+    //     leftMotor->rotate(0);
+    //     rightMotor->rotate(0);
+    // }
 }
 
 void Drivetrain::debug() {
-    updateEncoder();
-    
+    //updateEncoder();
 }
 
 void Drivetrain::debugScheduled() {
-    pids();
     // Serial.println("");
     // Serial.print("Output: ");
     // Serial.print(readEncoder(true));
 }
 
 void Drivetrain::pids() {
-    int16_t output = pidLeft.step(2000,(int16_t)(readEncoder(true)*100));
+    int16_t encoderReadR = (int16_t)readEncoder(false);
+    int16_t encoderReadL = (int16_t)readEncoder(true);
+    int16_t outputL = pidLeft.step(75,encoderReadL);
+    int16_t outputR = pidRight.step(75,encoderReadR);
+
     Serial.println("");
     Serial.print("Left: ");
-    Serial.print(readEncoder(true)*100);
+    Serial.print(encoderReadL);
     Serial.print(" Right: ");
-    Serial.print(readEncoder(false)*100);
-    //rightMotor->rotate(output);
+    Serial.print(encoderReadR);
+    Serial.print(" PID output ");
+    Serial.print(outputR);
+    //rightMotor->rotate(outputL/2);
+    //leftMotor->rotate(outputR/2); //at 75: 25khz oscil, 5000 encoder read.
+    rightMotor->rotate(outputR);
 }

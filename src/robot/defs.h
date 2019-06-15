@@ -39,11 +39,13 @@
 
 #define R_MOTOR_FWD 6
 #define R_MOTOR_RVS 5
-#define R_MOTOR_EN 1
+#define R_MOTOR_EN 7
 
 #define L_MOTOR_FWD 3
 #define L_MOTOR_RVS 4
 #define L_MOTOR_EN 2
 
 #define R_ENC_A 9
-#define L_ENC_A 10
+#define R_ENC_B 10
+#define L_ENC_A 25
+#define L_ENC_B 26
