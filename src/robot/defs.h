@@ -1,3 +1,5 @@
+#define WHEEL_DIA 0.051
+
 #define X_BUTTON 1
 #define TRI_BUTTON 3
 #define SQR_BUTTON 0

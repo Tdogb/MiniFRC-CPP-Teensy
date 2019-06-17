@@ -2,6 +2,8 @@
 #include <Encoder.h>
 #include "RobotEncoder.h"
 #include <robot/defs.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 //IntervalTimer encoderUpdate;
 elapsedMicros time_left;
