@@ -54,8 +54,14 @@ void Drivetrain::updateDrivetrain() {
 
 void Drivetrain::updateVelocityDrivetrain() {
     Serial.println("");
-    leftMotor->teleopVelocity(leftMotorSpeed);
-    rightMotor->teleopVelocity(rightMotorSpeed);
+    if(inAuto) {
+        leftMotor->commandVelocity(leftMotorSpeed);
+        rightMotor->commandVelocity(rightMotorSpeed);
+    }
+    else {
+        leftMotor->teleopVelocity(leftMotorSpeed);
+        rightMotor->teleopVelocity(rightMotorSpeed);
+    }
 }
 
 void Drivetrain::encoderUpdate() {
@@ -66,8 +72,10 @@ void Drivetrain::encoderUpdate() {
 void Drivetrain::followerUpdate() {
     // Serial.println("");
     if(inAuto) {
-        leftMotor->commandVelocity(leftFollower->update());
-        rightMotor->commandVelocity(rightFollower->update());
+        leftMotorSpeed = leftFollower->update();
+        rightMotorSpeed = rightFollower->update();
+        // leftMotor->commandVelocity(leftFollower->update());
+        // rightMotor->commandVelocity(rightFollower->update());
     }
     // leftMotor->rotate(255);
     // rightMotor->rotate(255);

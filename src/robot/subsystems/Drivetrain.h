@@ -27,5 +27,5 @@ public:
 
     int8_t throttle = 0;
     int8_t turn = 0;
-    bool inAuto = false;
+    bool inAuto = true;
 };

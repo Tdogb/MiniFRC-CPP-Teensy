@@ -43,4 +43,3 @@ int16_t Follower::update() {
     }
     return previousSpeed;
 }
-
