@@ -1,3 +1,6 @@
+#ifndef __STATES_H__
+#define __STATES_H__
+
 struct ElevatorState
 {
     int thetaRelDrivebase;
@@ -19,21 +22,4 @@ struct RobotState
     MechanismState hatchMechState;
 } currentRobotState;
 
-//MechanismState ballIntakeScoring;
-
-// void getStartingState() {
-//     RobotState startingState;
-//     startingState.ballIntakeState.theta = 0;
-// }
-
-// void l1() {
-
-// }
-
-// void l2() {
-
-// }
-
-// void l3() {
-
-// }
+#endif // __STATES_H__

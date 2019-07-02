@@ -79,3 +79,4 @@ Chrono schedular(Chrono::MILLIS);
 Chrono radioSchedular(Chrono::MILLIS);
 Chrono pidLoop(Chrono::MICROS);
 Chrono autoTimer(Chrono::MILLIS);
+Chrono robotModeTimer(Chrono::MILLIS);

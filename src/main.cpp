@@ -23,10 +23,9 @@ void loop() {
     radioSchedular.restart();
     mainScheduledMechanismsLoop();
   }
-  // if(pidLoop.hasPassed(10)) {
-  //   autoTimer.restart();
-  //   drivetrain->encoderUpdate();
-  // }
+  if(robotModeTimer.hasPassed(15000)) {
+    
+  }
   if(autoTimer.hasPassed(10)) {
     autoTimer.restart();
     drivetrain->followerUpdate();
@@ -106,20 +105,13 @@ ButtonPressCounter intakeHatch;
 ButtonPressCounter outtakeHatch;
 
 void buttonHandler(int buttonID) {
-  //Serial.println("");
-  //Serial.print("Button ID: ");
-  //Serial.print(buttonID);
   switch (buttonID) {
   //ELEVATOR
   case LEVEL_DOWN:
     changeElevatorHeightState(false);
-    //debug temp
-    //mechanisms->setMechanismState(false,!mechanisms->previousHatchState);
     break;
   case LEVEL_UP:
     changeElevatorHeightState(true);
-    //debug temp
-    //mechanisms->setMechanismState(true,!mechanisms->previousBallState);
     break;
   case ROTATION_LEFT_FINE:
     changeElevatorRotationState(true, 10);
@@ -135,7 +127,6 @@ void buttonHandler(int buttonID) {
     break;
   //MECHANISMS
   case TRI_BUTTON:
-    //mechanisms->setMechanismState(false,false, -1);
     zero();
     break;
   default:
@@ -160,11 +151,6 @@ void mainGameControllerLoop() {
 
   mechanisms->setIntakeOuttake(true,robotSerial->buttons[BALL_INTAKE], robotSerial->buttons[BALL_OUTTAKE]);
   mechanisms->setIntakeOuttake(false, robotSerial->buttons[HATCH_INTAKE], robotSerial->buttons[HATCH_OUTTAKE]);
-  //intakeBall.update(&buttonHandler, robotSerial->buttons[BALL_INTAKE], BALL_INTAKE);
-  //outtakeBall.update(&buttonHandler, robotSerial->buttons[BALL_OUTTAKE], BALL_OUTTAKE);
-  //intakeHatch.update(&buttonHandler, robotSerial->buttons[HATCH_INTAKE], HATCH_INTAKE);
-  //outtakeHatch.update(&buttonHandler, robotSerial->buttons[HATCH_OUTTAKE], HATCH_OUTTAKE);
-
   loopCount++;
 }
 
@@ -173,7 +159,6 @@ void mainScheduledGameControllerLoop() {
 }
 
 void changeElevatorHeightState(bool increment) {
-  //mechanisms->setMechanismState(false,false, -1);
   if(setpointElevatorHeight == 0) {
      if(increment){
        setpointElevatorHeight++;
@@ -200,14 +185,7 @@ void changeElevatorHeightState(bool increment) {
 }
 
 void changeElevatorRotationState(bool increment, int stepAmmount) { //130 FOR COURSE
-  // if(setpointElevatorRotation == 0) {
-  //    if(increment){
-  //      setpointElevatorRotation+=stepAmmount;
-  //    }  
-  // }
-  // else {
       if(increment){setpointElevatorRotation+=stepAmmount;} else {setpointElevatorRotation-=stepAmmount;}
-  // }
 }
 /*
 1135
@@ -226,14 +204,10 @@ void avoidCollisionRotation() {
 }
 
 void debugInit() {
-  //Add elevator debug to queue
-  //queue.addMeasuingValue(&debugVal);
-  //queue.addToQueue(&debugElevator);
 }
 
 void debugQueue() {
 }
 
 void debugLoop() {
-  //queue.update();
 }

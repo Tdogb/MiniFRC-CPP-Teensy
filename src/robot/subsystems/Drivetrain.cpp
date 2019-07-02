@@ -6,14 +6,7 @@
 #include <robot/sensor/RobotEncoder.h>
 #include "robot/autonomous/Follower.h"
 #include "robot/autonomous/Path.h"
-
-// #define Kp 50
-// #define Ki 0
-// #define Kd 0
-// #define updateFreq 100000
-
-// FastPID pidLeft(Kp, Ki, Kd, updateFreq, 8, false);
-// FastPID pidRight(Kp, Ki, Kd, updateFreq, 8, false);
+#include "robot/util/RobotMode.h"
 
 Follower* leftFollower;
 Follower* rightFollower;
@@ -70,42 +63,19 @@ void Drivetrain::encoderUpdate() {
 }
 
 void Drivetrain::followerUpdate() {
-    // Serial.println("");
     if(inAuto) {
         leftMotorSpeed = leftFollower->update();
         rightMotorSpeed = rightFollower->update();
-        // leftMotor->commandVelocity(leftFollower->update());
-        // rightMotor->commandVelocity(rightFollower->update());
     }
-    // leftMotor->rotate(255);
-    // rightMotor->rotate(255);
 }
 
 void Drivetrain::debug() {
-    //updateEncoder();
 }
 
 void Drivetrain::debugScheduled() {
-    // Serial.println("");
-    // Serial.print("Output: ");
-    // Serial.print(readEncoder(true));
-    //pids();
+
 }
 
 void Drivetrain::pids() {
-     //int16_t encoderReadR = (int16_t)readEncoder(false);
-     //int16_t encoderReadL = (int16_t)readEncoder(true);
-    // int16_t outputL = pidLeft.step(75,encoderReadL);
-    // int16_t outputR = pidRight.step(75,encoderReadR);
 
-    // Serial.println("");
-    // Serial.print("Left: ");
-    // Serial.print(encoderReadL);
-    // Serial.print(" Right: ");
-    // Serial.print(encoderReadR);
-    // Serial.print(" PID output ");
-    // Serial.print(outputR);
-    //rightMotor->rotate(outputL/2);
-    //leftMotor->rotate(outputR/2); //at 75: 25khz oscil, 5000 encoder read.
-    // rightMotor->rotate(outputR);
 }

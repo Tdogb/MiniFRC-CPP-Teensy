@@ -1,8 +1,10 @@
+#ifndef __FOLLOWER_H__
+#define __FOLLOWER_H__
+
 #include <stdint.h>
 #include "robot/motor/Brushed.h"
 #include <cstddef>
 #include <vector>
-
 class Follower
 {
 private:
@@ -15,3 +17,6 @@ public:
     ~Follower();
     int16_t update();
 };
+
+#endif // __FOLLOWER_H__
+

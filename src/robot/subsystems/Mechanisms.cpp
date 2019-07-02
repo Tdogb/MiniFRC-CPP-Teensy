@@ -1,5 +1,4 @@
 #include "Mechanisms.h"
-#include "robot/comms/Radio433.h"
 #include <stdint.h>
 #include <robot/defs.h>
 
@@ -17,7 +16,7 @@ union CBits
 
 CBits packetBits;
 
-Mechanisms* Mechanisms::singleInstance = NULL;
+Mechanisms* Mechanisms::singleInstance;
 
 Mechanisms* Mechanisms::Instance() {
     if(!singleInstance) {
